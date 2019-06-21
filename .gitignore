@@ -6,6 +6,7 @@ target/
 
 mvnw.cmd
 .mvn
+app_log/**
 
 ### STS ###
 .apt_generated
