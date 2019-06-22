@@ -8,7 +8,7 @@ import top.haibaraai.secondsKill.mapper.UserMapper;
 
 @RequestMapping("/test")
 @RestController
-public class TestController {
+public class TestController extends BasicController {
 
     @Autowired
     private UserMapper userMapper;
@@ -25,10 +25,13 @@ public class TestController {
     }
 
     @GetMapping("/sql")
-    public void testSql(@RequestParam(value = "id") int id) {
+    @ResponseBody
+    public Object testSql(@RequestParam(value = "id") int id) {
         if (userMapper.findByWxId(id) == null) {
             logger.info("数据库为空");
+            return error();
         }
+        return success();
     }
 
 }
