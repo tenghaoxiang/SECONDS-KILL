@@ -7,6 +7,7 @@ target/
 mvnw.cmd
 .mvn
 app_log/**
+src/main/resources/application.properties
 
 ### STS ###
 .apt_generated

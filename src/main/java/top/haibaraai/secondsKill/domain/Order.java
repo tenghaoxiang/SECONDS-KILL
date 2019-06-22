@@ -1,4 +1,4 @@
-package top.haibaraai.secondskill.domain;
+package top.haibaraai.secondsKill.domain;
 
 import java.io.Serializable;
 import java.util.Date;
