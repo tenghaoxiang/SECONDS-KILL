@@ -28,4 +28,10 @@ public class StockServiceImpl implements StockService {
     public int save(Stock stock) {
         return stockMapper.save(stock);
     }
+
+    @Override
+    public int decrease(int id) {
+        return stockMapper.decrease(id);
+    }
+
 }

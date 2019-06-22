@@ -12,4 +12,6 @@ public interface StockService {
 
     int save(Stock stock);
 
+    int decrease(int id);
+
 }
