@@ -4,14 +4,25 @@ var global_login_url = ""  //全局扫描登录
 //下单
 function save_order(id) {
     var token = $.cookie("token");
+    // console.info(token);
     if (!token || token == "") {
         //去登录
         window.location.href = global_login_url;
 
     }
     //下单接口
-    var url = host + "/stock/decrease?token=" + token + "&id=" + id;
-    $("#pay_img").attr("src", url);
+    // var url = host + "/stock/decrease?token=" + token + "&id=" + id;
+    // $("#pay_img").attr("src", url);
+    $.ajax({
+        type: 'get',
+        url: host + "/stock/decrease?token=" + token + "&id=" + id,
+        dataType: 'json',
+        success: function (res) {
+            // console.info(res.message)
+            $("#myModalLabel").html(res.message)
+        }
+    })
+
 
 }
 
@@ -28,7 +39,7 @@ $(function () {
             dataType: 'json',
             success: function (res) {
                 var data = res.data;
-                console.info(data.length)
+                // console.info(data.length)
                 for (var i = 0; i < data.length; i++) {
                     var stock = data[i];
                     var price = stock.price;

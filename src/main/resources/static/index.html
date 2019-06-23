@@ -31,17 +31,30 @@
 
 
 <!-- 二维码弹出窗口 -->
+<!--<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">-->
+<!--  <div class="modal-dialog" role="document">-->
+<!--    <div class="modal-content">-->
+<!--      <div class="modal-header">-->
+<!--        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+<!--        <h4 class="modal-title" id="myModalLabel">订单有效时间10分钟</h4>-->
+<!--      </div>-->
+
+<!--      <div class="modal-body">-->
+<!--       <img id="pay_img" src="" alt="..." style="width: 200px;height: 200px" class="img-circle">-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!-- 暂时写死，不用支付 -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">订单有效时间10分钟</h4>
+      <div class="modal-body">
+        <button type="button" class="close" onclick="window.location.reload()" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">请登录!</h4>
       </div>
 
-      <div class="modal-body">
-       <img id="pay_img" src="" alt="..." style="width: 200px;height: 200px" class="img-circle">
-      </div>
     </div>
   </div>
 </div>
