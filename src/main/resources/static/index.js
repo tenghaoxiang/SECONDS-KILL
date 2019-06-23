@@ -4,12 +4,12 @@ var global_login_url = ""  //全局扫描登录
 //下单
 function save_order(id) {
     var token = $.cookie("token");
-    // console.info(token);
-    if (!token || token == "") {
-        //去登录
-        window.location.href = global_login_url;
-
-    }
+    console.info(token);
+    // if (!token || token == "") {
+    //     //去登录
+    //     window.location.href = global_login_url;
+    //
+    // }
     //下单接口
     // var url = host + "/stock/decrease?token=" + token + "&id=" + id;
     // $("#pay_img").attr("src", url);
