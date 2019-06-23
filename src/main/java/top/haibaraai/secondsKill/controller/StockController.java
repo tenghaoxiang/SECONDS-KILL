@@ -102,7 +102,7 @@ public class StockController extends BasicController {
             logger.info("==============秒杀成功==============");
         } else {
             logger.info("==============库存不足==============");
-            return error("null", "库存不足!");
+            return error(null, "库存不足!");
         }
         return success(null, "秒杀成功!");
     }
