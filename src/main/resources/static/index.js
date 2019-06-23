@@ -10,7 +10,7 @@ function save_order(id) {
 
     }
     //下单接口
-    var url = host + "/user/order/add?token=" + token + "&video_id=" + id;
+    var url = host + "/stock/decrease?token=" + token + "&id=" + id;
     $("#pay_img").attr("src", url);
 
 }

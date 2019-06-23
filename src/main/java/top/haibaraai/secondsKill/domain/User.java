@@ -29,6 +29,8 @@ public class User implements Serializable {
 
     /**
      * 性别
+     * 0 男性
+     * 1 女性
      */
     private Integer sex;
 
