@@ -31,8 +31,8 @@ public interface StockMapper {
      * @return
      */
     @Insert("INSERT INTO `seconds_kill`.`stock`" +
-            "(`name`, `price`, `count`, `sale`, `create_time`) " +
-            "VALUES (#{name}, #{price}, #{count}, #{sale}, #{createTime})")
+            "(`name`, `price`, `count`, `sale`, `create_time`, `cover_img`) " +
+            "VALUES (#{name}, #{price}, #{count}, #{sale}, #{createTime}, #{cover_img})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int save(Stock stock);
 

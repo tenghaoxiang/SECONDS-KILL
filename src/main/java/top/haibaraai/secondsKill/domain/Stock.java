@@ -37,6 +37,11 @@ public class Stock implements Serializable {
      */
     private Date createTime;
 
+    /**
+     * 商品封面
+     */
+    private String coverImg;
+
     public Integer getId() {
         return id;
     }
@@ -83,5 +88,13 @@ public class Stock implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getCoverImg() {
+        return coverImg;
+    }
+
+    public void setCoverImg(String coverImg) {
+        this.coverImg = coverImg;
     }
 }

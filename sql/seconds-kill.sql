@@ -19,6 +19,7 @@
         `count` int(11) NOT NULL COMMENT '库存量',
         `sale` int(11) NOT NULL DEFAULT '0' COMMENT '已售',
         `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+        `cover_img` varchar(512) NOT NULL COMMENT '封面url',
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
