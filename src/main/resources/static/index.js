@@ -32,11 +32,13 @@ $(function () {
                 for (var i = 0; i < data.length; i++) {
                     var stock = data[i];
                     var price = stock.price;
+                    var sale = stock.sale;
+                    var count = stock.count;
 
                     var template = "<div class='col-sm-6 col-md-3'><div class='thumbnail'>" +
                         "<img src='" + stock.coverImg + "' alt='通用的占位符缩略图'>" +
-                        "<div class='caption'><h3>" + stock.name + "</h3><p>价格:" + price + "元</p>" +
-                        "<p><a href='' onclick='save_order(" + stock.id + ")' data-toggle='modal' data-target='#myModal' class='btn btn-primary' role='button'>立刻购买</a></p></div></div></div>"
+                        "<div class='caption'><h3>" + stock.name + "</h3><p>价格:" + price + "元&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总销量:" + sale + "件&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;库存:"+count+"件</p>" +
+                        "<p><a href='' onclick='save_order(" + stock.id + ")' data-toggle='modal' data-target='#myModal' class='btn btn-primary' role='button'>立刻秒杀</a></p></div></div></div>"
                     $(".row").append(template);
                 }
             }
