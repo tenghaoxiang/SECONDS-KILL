@@ -3,6 +3,7 @@ package top.haibaraai.secondsKill.controller;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.haibaraai.secondsKill.domain.JsonData;
 import top.haibaraai.secondsKill.domain.Order;
@@ -29,6 +30,9 @@ public class StockController extends BasicController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 增加商品
