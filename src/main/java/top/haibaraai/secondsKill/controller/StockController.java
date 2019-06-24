@@ -9,6 +9,7 @@ import top.haibaraai.secondsKill.domain.Order;
 import top.haibaraai.secondsKill.domain.Stock;
 import top.haibaraai.secondsKill.domain.User;
 import top.haibaraai.secondsKill.service.OrderService;
+import top.haibaraai.secondsKill.service.RedisService;
 import top.haibaraai.secondsKill.service.StockService;
 import top.haibaraai.secondsKill.service.UserService;
 
@@ -29,6 +30,9 @@ public class StockController extends BasicController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 增加商品
@@ -83,9 +87,20 @@ public class StockController extends BasicController {
      * @return
      */
     @GetMapping("/decrease")
-    public synchronized JsonData decrease(@RequestParam(value = "token") String token,
+    public JsonData decrease(@RequestParam(value = "token") String token,
                              @RequestParam(value = "id") int id) {
-        User user = userService.findById(1);
+        String user_id = "user_" + 1;
+        User user;
+        if ((user = (User) redisService.get(user_id)) == null) {
+            user = userService.findById(1);
+            redisService.set(user_id, user);
+        }
+//        String stock_id = "stock_" + id;
+//        Stock stock;
+//        if ((stock = (Stock) redisService.get(stock_id)) == null) {
+//            stock = stockService.findById(id);
+//            redisService.set(stock_id, stock);
+//        }
         Stock stock = stockService.findById(id);
         if (stock.getCount() >= 1) {
             stockService.decrease(id);
