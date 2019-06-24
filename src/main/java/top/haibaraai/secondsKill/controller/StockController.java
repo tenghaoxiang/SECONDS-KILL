@@ -83,7 +83,7 @@ public class StockController extends BasicController {
      * @return
      */
     @GetMapping("/decrease")
-    public JsonData decrease(@RequestParam(value = "token") String token,
+    public synchronized JsonData decrease(@RequestParam(value = "token") String token,
                              @RequestParam(value = "id") int id) {
         User user = userService.findById(1);
         Stock stock = stockService.findById(id);
