@@ -3,7 +3,6 @@ package top.haibaraai.secondsKill.controller;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.haibaraai.secondsKill.domain.JsonData;
 import top.haibaraai.secondsKill.domain.Order;
@@ -30,9 +29,6 @@ public class StockController extends BasicController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     /**
      * 增加商品
@@ -92,7 +88,6 @@ public class StockController extends BasicController {
         User user = userService.findById(1);
         Stock stock = stockService.findById(id);
         if (stock.getCount() >= 1) {
-            logger.info("==============开始秒杀==============");
             stockService.decrease(id);
             Order order = new Order();
             order.setUserId(user.getId());
@@ -103,9 +98,7 @@ public class StockController extends BasicController {
             order.setCreateTime(new Date());
             order.setFinishTime(new Date());
             orderService.save(order);
-            logger.info("==============秒杀成功==============");
         } else {
-            logger.info("==============库存不足==============");
             return error(null, "库存不足!");
         }
         return success(null, "秒杀成功!");
