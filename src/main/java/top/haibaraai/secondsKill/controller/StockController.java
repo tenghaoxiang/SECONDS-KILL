@@ -95,13 +95,13 @@ public class StockController extends BasicController {
             user = userService.findById(1);
             redisService.set(user_id, user);
         }
-        String stock_id = "stock_" + id;
-        Stock stock;
-        if ((stock = (Stock) redisService.get(stock_id)) == null) {
-            stock = stockService.findById(id);
-            redisService.set(stock_id, stock);
-        }
-//        Stock stock = stockService.findById(id);
+//        String stock_id = "stock_" + id;
+//        Stock stock;
+//        if ((stock = (Stock) redisService.get(stock_id)) == null) {
+//            stock = stockService.findById(id);
+//            redisService.set(stock_id, stock);
+//        }
+        Stock stock = stockService.findById(id);
         if (stock.getCount() >= 1) {
             stockService.decrease(id);
             Order order = new Order();

@@ -60,10 +60,24 @@ public class RedisService {
     public boolean setnx(final String key, Object value) {
         boolean result = false;
         try {
-            if (redisTemplate.opsForValue().get(key) != null) {
-                redisTemplate.opsForValue().set(key, value);
-                result = true;
-            }
+            result = redisTemplate.opsForValue().setIfAbsent(key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 字符串-若key不存在则插入并设置超时时间
+     * @param key
+     * @param value
+     * @param expire 秒
+     * @return
+     */
+    public boolean setnxex(final String key, Object value, Long expire) {
+        boolean result = false;
+        try {
+            result = redisTemplate.opsForValue().setIfAbsent(key, value, expire, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();
         }
