@@ -39,10 +39,28 @@ public class RedisService {
      * @param expire 秒
      * @return
      */
-    public boolean setex(final String key, Object value, Long expire) {
+    public boolean setex(final String key, Object value, long expire) {
         boolean result = false;
         try {
             redisTemplate.opsForValue().set(key,value,expire,TimeUnit.SECONDS);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 字符串写入操作，并设置过期时间
+     * @param key
+     * @param value
+     * @param expire 时间单位
+     * @return
+     */
+    public boolean setex(final String key, Object value, long expire, TimeUnit timeUnit) {
+        boolean result = false;
+        try {
+            redisTemplate.opsForValue().set(key,value,expire,timeUnit);
             result = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,10 +91,27 @@ public class RedisService {
      * @param expire 秒
      * @return
      */
-    public boolean setnxex(final String key, Object value, Long expire) {
+    public boolean setnxex(final String key, Object value, long expire) {
         boolean result = false;
         try {
             result = redisTemplate.opsForValue().setIfAbsent(key, value, expire, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 字符串-若key不存在则插入并设置超时时间
+     * @param key
+     * @param value
+     * @param expire 时间单位
+     * @return
+     */
+    public boolean setnxex(final String key, Object value, long expire, TimeUnit timeUnit) {
+        boolean result = false;
+        try {
+            result = redisTemplate.opsForValue().setIfAbsent(key, value, expire, timeUnit);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,8 +143,19 @@ public class RedisService {
      * @param time 秒
      * @return
      */
-    public boolean expire(final String key, Long time) {
+    public boolean expire(final String key, long time) {
         return redisTemplate.expire(key, time, TimeUnit.SECONDS);
+    }
+
+    /**
+     * redis为键值对设置过期时间
+     * @param key
+     * @param time
+     * @param timeUnit 时间单位
+     * @return
+     */
+    public boolean expire(final String key, long time, TimeUnit timeUnit) {
+        return redisTemplate.expire(key, time, timeUnit);
     }
 
 }
