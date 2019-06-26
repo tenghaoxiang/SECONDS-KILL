@@ -9,7 +9,7 @@ import top.haibaraai.secondsKill.domain.Order;
 import top.haibaraai.secondsKill.domain.Stock;
 import top.haibaraai.secondsKill.domain.User;
 import top.haibaraai.secondsKill.service.OrderService;
-import top.haibaraai.secondsKill.service.RedisService;
+import top.haibaraai.secondsKill.util.RedisService;
 import top.haibaraai.secondsKill.service.StockService;
 import top.haibaraai.secondsKill.service.UserService;
 
