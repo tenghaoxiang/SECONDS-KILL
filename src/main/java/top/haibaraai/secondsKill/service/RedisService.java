@@ -42,8 +42,7 @@ public class RedisService {
     public boolean setex(final String key, Object value, Long expire) {
         boolean result = false;
         try {
-            redisTemplate.opsForValue().set(key, value);
-            redisTemplate.expire(key, expire, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(key,value,expire,TimeUnit.SECONDS);
             result = true;
         } catch (Exception e) {
             e.printStackTrace();
