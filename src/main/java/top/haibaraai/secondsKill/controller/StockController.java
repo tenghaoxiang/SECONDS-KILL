@@ -5,9 +5,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.haibaraai.secondsKill.domain.JsonData;
-import top.haibaraai.secondsKill.domain.Order;
 import top.haibaraai.secondsKill.domain.Stock;
-import top.haibaraai.secondsKill.domain.User;
 import top.haibaraai.secondsKill.service.OrderService;
 import top.haibaraai.secondsKill.util.RedisService;
 import top.haibaraai.secondsKill.service.StockService;
@@ -78,45 +76,6 @@ public class StockController extends BasicController {
         data.put("current_page",page);//当前页
         data.put("data",pageInfo.getList());//数据
         return data;
-    }
-
-    /**
-     * 下单接口
-     * @param token 解析用户
-     * @param id 商品id
-     * @return
-     */
-    @GetMapping("/decrease")
-    public JsonData decrease(@RequestParam(value = "token") String token,
-                             @RequestParam(value = "id") int id) {
-        String user_id = "user_" + 1;
-        User user;
-        if ((user = (User) redisService.get(user_id)) == null) {
-            user = userService.findById(1);
-            redisService.set(user_id, user);
-        }
-//        String stock_id = "stock_" + id;
-//        Stock stock;
-//        if ((stock = (Stock) redisService.get(stock_id)) == null) {
-//            stock = stockService.findById(id);
-//            redisService.set(stock_id, stock);
-//        }
-        Stock stock = stockService.findById(id);
-        if (stock.getCount() >= 1) {
-            stockService.decrease(id);
-            Order order = new Order();
-            order.setUserId(user.getId());
-            order.setStockId(id);
-            order.setAddress(user.getAddress());
-            order.setPrice(stock.getPrice());
-            order.setStatus(1);
-            order.setCreateTime(new Date());
-            order.setFinishTime(new Date());
-            orderService.save(order);
-        } else {
-            return error(null, "库存不足!");
-        }
-        return success(null, "秒杀成功!");
     }
 
 }

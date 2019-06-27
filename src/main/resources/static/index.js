@@ -15,7 +15,7 @@ function save_order(id) {
     // $("#pay_img").attr("src", url);
     $.ajax({
         type: 'get',
-        url: host + "/stock/decrease?token=" + token + "&id=" + id,
+        url: host + "/second-kill/start?token=" + token + "&id=" + id,
         dataType: 'json',
         success: function (res) {
             // console.info(res.message)

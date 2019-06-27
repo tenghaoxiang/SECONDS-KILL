@@ -15,7 +15,7 @@ public interface StockMapper {
      * @param id 商品id
      * @return
      */
-    @Select("SELECT * FROM stock WHERE id = #{id}")
+    @Select("SELECT * FROM stock WHERE id = #{id} limit 1")
     Stock findById(int id);
 
     /**
@@ -41,7 +41,17 @@ public interface StockMapper {
      * @param id 商品id
      * @return
      */
-    @Update("UPDATE stock SET count = count - 1, sale = sale + 1 WHERE id = #{id}")
+    @Update("UPDATE stock SET count = count - 1, sale = sale + 1 WHERE id = #{id} limit 1")
     int decrease(int id);
+
+    /**
+     *
+     * 根据商品id降低n件库存
+     * @param id 商品id
+     * @param sale 卖出去了多少件
+     * @return
+     */
+    @Update("UPDATE stock SET count = count - #{sale}, sale = sale + #{sale} WHERE id = #{id} limit 1")
+    int decrease(int id, int sale);
 
 }
