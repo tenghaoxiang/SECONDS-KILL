@@ -1,18 +1,23 @@
 package top.haibaraai.secondsKill.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.haibaraai.secondsKill.domain.JsonData;
+import top.haibaraai.secondsKill.domain.Order;
 import top.haibaraai.secondsKill.domain.Stock;
 import top.haibaraai.secondsKill.domain.User;
+import top.haibaraai.secondsKill.service.OrderService;
 import top.haibaraai.secondsKill.service.StockService;
 import top.haibaraai.secondsKill.service.UserService;
 import top.haibaraai.secondsKill.util.DistributedLock;
 import top.haibaraai.secondsKill.util.RedisService;
 import top.haibaraai.secondsKill.util.UUIDUtil;
+
+import java.util.Date;
 
 @RequestMapping("/second-kill")
 @RestController
@@ -28,6 +33,9 @@ public class SecKillController extends BasicController {
     private UserService userService;
 
     @Autowired
+    private OrderService orderService;
+
+    @Autowired
     private RedisService redisService;
 
     private String USER_PREFIX = "user_";
@@ -39,6 +47,7 @@ public class SecKillController extends BasicController {
     @GetMapping("/start")
     public JsonData start(@RequestParam(value = "token") String token,
                           @RequestParam(value = "id") int id) {
+        //根据token解析出user，并进行判断
         User user = null;
         Stock stock = null;
         //暂时写死
@@ -58,18 +67,33 @@ public class SecKillController extends BasicController {
         try {
             stock = stockService.findById(id);
             if (stock.getCount() > 0) {
+                saveOrder(user, stock);
                 stockService.decrease(id);
             } else {
                 return error(null, "库存不足!");
             }
+        } catch (DataIntegrityViolationException e) {
+            return error(null, "库存不足!");
         } catch (Exception e) {
             logger.error("error occur while secKill: " + e);
             return error(null, "发生异常，请重试");
-        }finally {
+        } finally {
             //释放锁
             distributedLock.unlock(lockKey, lockValue);
         }
         return success(null, "秒杀成功!");
+    }
+
+    private void saveOrder(User user, Stock stock) {
+        Order order = new Order();
+        order.setUserId(user.getId());
+        order.setStockId(stock.getId());
+        order.setAddress(user.getAddress());
+        order.setPrice(stock.getPrice());
+        order.setStatus(0);
+        order.setCreateTime(new Date());
+        order.setFinishTime(new Date());
+        orderService.save(order);
     }
 
 }
