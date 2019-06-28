@@ -34,4 +34,9 @@ public class StockServiceImpl implements StockService {
         return stockMapper.decrease(id);
     }
 
+    @Override
+    public int delAmount(int id, int amount) {
+        return stockMapper.delAmount(id, amount);
+    }
+
 }

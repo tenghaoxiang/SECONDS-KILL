@@ -43,12 +43,12 @@ public class SecKillController extends BasicController {
         Stock stock = null;
         //暂时写死
         String userKey = USER_PREFIX + 1;
-        if ((user = (User) redisService.get(userKey)) == null) {
-            //暂时写死
-            user = userService.findById(1);
-            redisService.set(userKey, user);
-        }
-//        user = userService.findById(1);
+//        if (((user = (User) redisService.get(userKey)) == null)) {
+//            //暂时写死
+//            user = userService.findById(1);
+//            redisService.set(userKey, user);
+//        }
+        user = userService.findById(1);
         String lockKey = LOCK_PREIX + id;
         String lockValue = UUIDUtil.generate();
         while (!distributedLock.lock(lockKey, lockValue, 100)) {

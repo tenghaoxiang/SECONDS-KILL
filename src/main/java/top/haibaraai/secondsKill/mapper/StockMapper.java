@@ -45,13 +45,12 @@ public interface StockMapper {
     int decrease(int id);
 
     /**
-     *
      * 根据商品id降低n件库存
      * @param id 商品id
-     * @param sale 卖出去了多少件
+     * @param amount 商品数量
      * @return
      */
-    @Update("UPDATE stock SET count = count - #{sale}, sale = sale + #{sale} WHERE id = #{id} limit 1")
-    int decrease(int id, int sale);
+    @Update("UPDATE stock SET count = count - #{amount}, sale = sale + #{amount} WHERE id = #{id} limit 1")
+    int delAmount(int id, int amount);
 
 }
