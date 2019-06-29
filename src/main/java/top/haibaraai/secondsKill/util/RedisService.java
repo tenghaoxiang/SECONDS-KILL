@@ -158,4 +158,42 @@ public class RedisService {
         return redisTemplate.expire(key, time, timeUnit);
     }
 
+    /**
+     * 对键值原子性减一
+     * @param key
+     * @return
+     */
+    public long decr(final String key) {
+        return redisTemplate.opsForValue().decrement(key);
+    }
+
+    /**
+     * 对键值原子性减n
+     * @param key
+     * @param amount
+     * @return
+     */
+    public long decrBy(final String key, int amount) {
+        return redisTemplate.opsForValue().decrement(key, amount);
+    }
+
+    /**
+     * 对键值原子性加1
+     * @param key
+     * @return
+     */
+    public long incr(final String key) {
+        return redisTemplate.opsForValue().increment(key);
+    }
+
+    /**
+     * 对键值原子性加n
+     * @param key
+     * @param amount
+     * @return
+     */
+    public long incrBy(final String key, int amount) {
+        return redisTemplate.opsForValue().increment(key, amount);
+    }
+
 }
