@@ -29,10 +29,11 @@ public class User implements Serializable {
 
     /**
      * 性别
-     * 0 男性
-     * 1 女性
+     * 0 未定义
+     * 1 男性
+     * 2 女性
      */
-    private Integer sex;
+    private String sex;
 
     /**
      * 注册时间
@@ -76,11 +77,11 @@ public class User implements Serializable {
         this.headImg = headImg;
     }
 
-    public Integer getSex() {
+    public String getSex() {
         return sex;
     }
 
-    public void setSex(Integer sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 

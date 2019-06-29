@@ -63,7 +63,7 @@ $(function () {
         var current_page = window.location.href;
         $.ajax({
             type: 'get',
-            url: host + "/wechat/login_url?state=" + current_page,
+            url: host + "/login/url?state=" + current_page,
             dataType: 'json',
             success: function (res) {
                 //console.info(res.data)

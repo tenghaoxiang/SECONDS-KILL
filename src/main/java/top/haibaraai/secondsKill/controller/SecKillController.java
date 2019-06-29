@@ -1,23 +1,16 @@
 package top.haibaraai.secondsKill.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.haibaraai.secondsKill.domain.JsonData;
-import top.haibaraai.secondsKill.domain.Order;
-import top.haibaraai.secondsKill.domain.Stock;
-import top.haibaraai.secondsKill.domain.User;
 import top.haibaraai.secondsKill.service.OrderService;
 import top.haibaraai.secondsKill.service.StockService;
 import top.haibaraai.secondsKill.service.UserService;
 import top.haibaraai.secondsKill.util.DistributedLock;
 import top.haibaraai.secondsKill.util.RedisService;
-import top.haibaraai.secondsKill.util.UUIDUtil;
-
-import java.util.Date;
 
 @RequestMapping("/second-kill")
 @RestController
@@ -47,53 +40,14 @@ public class SecKillController extends BasicController {
     @GetMapping("/start")
     public JsonData start(@RequestParam(value = "token") String token,
                           @RequestParam(value = "id") int id) {
-        //根据token解析出user，并进行判断
-        User user = null;
-        Stock stock = null;
-        //暂时写死
-        String userKey = USER_PREFIX + 1;
-//        if (((user = (User) redisService.get(userKey)) == null)) {
-//            //暂时写死
-//            user = userService.findById(1);
-//            redisService.set(userKey, user);
-//        }
-        user = userService.findById(1);
-        String lockKey = LOCK_PREIX + id;
-        String lockValue = UUIDUtil.generate();
-        while (!distributedLock.lock(lockKey, lockValue, 100)) {
 
-        }
-        //获得锁成功
-        try {
-            stock = stockService.findById(id);
-            if (stock.getCount() > 0) {
-                saveOrder(user, stock);
-                stockService.decrease(id);
-            } else {
-                return error(null, "库存不足!");
-            }
-        } catch (DataIntegrityViolationException e) {
-            return error(null, "库存不足!");
-        } catch (Exception e) {
-            logger.error("error occur while secKill: " + e);
-            return error(null, "发生异常，请重试");
-        } finally {
-            //释放锁
-            distributedLock.unlock(lockKey, lockValue);
-        }
-        return success(null, "秒杀成功!");
-    }
+        //解析token,获取当前用户,若解析出错或者token为空,提醒用户进行登录
+        //本地存储一个map,用来记录商品是否已经卖光，减少redis压力。
+        //对redis减少库存
+        //存入消息队列
 
-    private void saveOrder(User user, Stock stock) {
-        Order order = new Order();
-        order.setUserId(user.getId());
-        order.setStockId(stock.getId());
-        order.setAddress(user.getAddress());
-        order.setPrice(stock.getPrice());
-        order.setStatus(0);
-        order.setCreateTime(new Date());
-        order.setFinishTime(new Date());
-        orderService.save(order);
+        return success();
+
     }
 
 }

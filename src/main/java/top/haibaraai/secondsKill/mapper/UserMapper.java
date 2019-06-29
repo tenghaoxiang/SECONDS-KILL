@@ -23,7 +23,7 @@ public interface UserMapper {
      * @return
      */
     @Select("SELECT * FROM user WHERE wx_id = #{id} limit 1")
-    User findByWxId(int id);
+    User findByWxId(String id);
 
     /**
      * 查询全部用户
