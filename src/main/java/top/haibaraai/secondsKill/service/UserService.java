@@ -6,4 +6,6 @@ public interface UserService {
 
     User save(String code);
 
+    User findById(int id);
+
 }

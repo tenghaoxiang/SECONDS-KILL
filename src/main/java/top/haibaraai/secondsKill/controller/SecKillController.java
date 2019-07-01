@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.haibaraai.secondsKill.domain.JsonData;
 import top.haibaraai.secondsKill.domain.Stock;
+import top.haibaraai.secondsKill.rocketmq.OrderProducer;
 import top.haibaraai.secondsKill.service.OrderService;
 import top.haibaraai.secondsKill.service.StockBloomFilterService;
 import top.haibaraai.secondsKill.service.StockService;
@@ -16,7 +17,9 @@ import top.haibaraai.secondsKill.util.DistributedLock;
 import top.haibaraai.secondsKill.util.JwtUtils;
 import top.haibaraai.secondsKill.util.RedisService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/second-kill")
 @RestController
@@ -40,32 +43,36 @@ public class SecKillController extends BasicController {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private OrderProducer orderProducer;
+
     private String STOCK_PREFIX = "stock_";
 
-    private String LOCK_PREIX = "lock_";
+    private String LOCK_PREFIX = "lock_";
 
     @GetMapping("/start")
-    public JsonData start(@RequestParam(value = "token") String token,
-                          @RequestParam(value = "stock_id") int stockId) {
+    public JsonData start(@RequestParam(value = "token",required = false) String token,
+                          @RequestParam(value = "id") int stockId) {
 
         //解析token,获取当前用户id,若解析出错或者token为空,提醒用户进行登录
-        Claims claims = JwtUtils.checkJWT(token);
-        int userId = (Integer) claims.get("id");
+//        Claims claims = JwtUtils.checkJWT(token);
+//        int userId = (Integer) claims.get("id");
+        int userId = 1;
         //在本地通过bloom过滤器进行判断此商品是否已经卖完
-        if (stockBloomFilterService.isExist(stockId)) {
-            return success(null, "商品已售空!");
-        }
+//        if (stockBloomFilterService.isExist(stockId)) {
+//            return success(null, "商品已售空!");
+//        }
 
         Stock stock = null;
         String stockKey = STOCK_PREFIX + stockId;
-        String lockKey = LOCK_PREIX + stockId;
+        String lockKey = LOCK_PREFIX + stockId;
 
         //尝试获得商品锁
         while (distributedLock.lock(lockKey, userId, 1)) {
         }
         try {
             //尝试从redis中获取，若没有则从mysql中获取并添加到redis
-            if ((stock = (Stock) redisService.get(stockKey)) == null) {
+            if (redisService.get(stockKey) == null) {
                 stock = stockService.findById(stockId);
                 redisService.set(stockKey, stock);
             }
@@ -76,14 +83,16 @@ public class SecKillController extends BasicController {
                 return success(null, "商品已售空!");
             }
             //放入消息队列
-
+            Map<String, Object> map = new HashMap<>();
+            map.put("stockId", stockId);
+            map.put("userId", userId);
+            orderProducer.sendMessage(map);
+            return success(null, "下单成功!");
         } catch (Exception e) {
-
+            return error(null, "系统发生异常，请重试!");
         }finally {
             distributedLock.unlock(lockKey, userId);
         }
-
-        return success();
 
     }
 
