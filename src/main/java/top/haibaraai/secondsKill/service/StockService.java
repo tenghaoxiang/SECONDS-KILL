@@ -16,4 +16,6 @@ public interface StockService {
 
     int delAmount(int id, int amount);
 
+    int countAll();
+
 }

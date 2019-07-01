@@ -7,13 +7,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.haibaraai.secondsKill.domain.JsonData;
-import top.haibaraai.secondsKill.domain.User;
+import top.haibaraai.secondsKill.domain.Stock;
 import top.haibaraai.secondsKill.service.OrderService;
+import top.haibaraai.secondsKill.service.StockBloomFilterService;
 import top.haibaraai.secondsKill.service.StockService;
 import top.haibaraai.secondsKill.service.UserService;
 import top.haibaraai.secondsKill.util.DistributedLock;
 import top.haibaraai.secondsKill.util.JwtUtils;
 import top.haibaraai.secondsKill.util.RedisService;
+
+import java.util.List;
 
 @RequestMapping("/second-kill")
 @RestController
@@ -32,9 +35,10 @@ public class SecKillController extends BasicController {
     private OrderService orderService;
 
     @Autowired
-    private RedisService redisService;
+    private StockBloomFilterService stockBloomFilterService;
 
-    private String USER_PREFIX = "user_";
+    @Autowired
+    private RedisService redisService;
 
     private String STOCK_PREFIX = "stock_";
 
@@ -46,18 +50,52 @@ public class SecKillController extends BasicController {
 
         //解析token,获取当前用户id,若解析出错或者token为空,提醒用户进行登录
         Claims claims = JwtUtils.checkJWT(token);
-        if (claims != null) {
-            int userId = (Integer) claims.get("id");
-        } else {
-            return success(null, "请登录");
+        int userId = (Integer) claims.get("id");
+        //在本地通过bloom过滤器进行判断此商品是否已经卖完
+        if (stockBloomFilterService.isExist(stockId)) {
+            return success(null, "商品已售空!");
         }
 
-        //本地存储一个map,用来记录商品是否已经卖光，减少redis压力。
-        //对redis减少库存
-        //存入消息队列
+        Stock stock = null;
+        String stockKey = STOCK_PREFIX + stockId;
+        String lockKey = LOCK_PREIX + stockId;
+
+        //尝试获得商品锁
+        while (distributedLock.lock(lockKey, userId, 1)) {
+        }
+        try {
+            //尝试从redis中获取，若没有则从mysql中获取并添加到redis
+            if ((stock = (Stock) redisService.get(stockKey)) == null) {
+                stock = stockService.findById(stockId);
+                redisService.set(stockKey, stock);
+            }
+            //在redis中预减库存
+            long left = redisService.decr(stockKey);
+            if (left < 0) {
+                stockBloomFilterService.add(stockId);
+                return success(null, "商品已售空!");
+            }
+            //放入消息队列
+
+        } catch (Exception e) {
+
+        }finally {
+            distributedLock.unlock(lockKey, userId);
+        }
 
         return success();
 
+    }
+
+    @GetMapping("/init")
+    public JsonData init() {
+        List<Stock> stockList = stockService.findAll();
+        String stockKey;
+        for (Stock stock : stockList) {
+            stockKey = STOCK_PREFIX + stock.getId();
+            redisService.set(stockKey, stock.getCount());
+        }
+        return success(null, "初始化成功!");
     }
 
 }

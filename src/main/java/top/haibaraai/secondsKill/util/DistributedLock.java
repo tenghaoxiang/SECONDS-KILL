@@ -66,7 +66,7 @@ public class DistributedLock {
      * @param value
      * @return
      */
-    public boolean unlock(String key, String value) {
+    public boolean unlock(String key, Object value) {
         DefaultRedisScript<Boolean> redisScript = new DefaultRedisScript<>();
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("/lua/unlock.lua")));
         redisScript.setResultType(Boolean.class);

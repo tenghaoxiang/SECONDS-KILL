@@ -53,4 +53,11 @@ public interface StockMapper {
     @Update("UPDATE stock SET count = count - #{amount}, sale = sale + #{amount} WHERE id = #{id} limit 1")
     int delAmount(int id, int amount);
 
+    /**
+     * 查询参加秒杀的商品总数量
+     * @return
+     */
+    @Select("SELECT COUNT(1) FROM stock")
+    int countAll();
+
 }

@@ -39,4 +39,9 @@ public class StockServiceImpl implements StockService {
         return stockMapper.delAmount(id, amount);
     }
 
+    @Override
+    public int countAll() {
+        return stockMapper.countAll();
+    }
+
 }
