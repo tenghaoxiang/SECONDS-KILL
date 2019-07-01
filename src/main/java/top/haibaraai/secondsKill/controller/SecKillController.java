@@ -1,15 +1,18 @@
 package top.haibaraai.secondsKill.controller;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.haibaraai.secondsKill.domain.JsonData;
+import top.haibaraai.secondsKill.domain.User;
 import top.haibaraai.secondsKill.service.OrderService;
 import top.haibaraai.secondsKill.service.StockService;
 import top.haibaraai.secondsKill.service.UserService;
 import top.haibaraai.secondsKill.util.DistributedLock;
+import top.haibaraai.secondsKill.util.JwtUtils;
 import top.haibaraai.secondsKill.util.RedisService;
 
 @RequestMapping("/second-kill")
@@ -39,9 +42,16 @@ public class SecKillController extends BasicController {
 
     @GetMapping("/start")
     public JsonData start(@RequestParam(value = "token") String token,
-                          @RequestParam(value = "id") int id) {
+                          @RequestParam(value = "stock_id") int stockId) {
 
-        //解析token,获取当前用户,若解析出错或者token为空,提醒用户进行登录
+        //解析token,获取当前用户id,若解析出错或者token为空,提醒用户进行登录
+        Claims claims = JwtUtils.checkJWT(token);
+        if (claims != null) {
+            int userId = (Integer) claims.get("id");
+        } else {
+            return success(null, "请登录");
+        }
+
         //本地存储一个map,用来记录商品是否已经卖光，减少redis压力。
         //对redis减少库存
         //存入消息队列

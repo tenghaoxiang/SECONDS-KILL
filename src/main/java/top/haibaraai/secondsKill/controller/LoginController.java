@@ -9,7 +9,10 @@ import top.haibaraai.secondsKill.config.WechatConfig;
 import top.haibaraai.secondsKill.domain.JsonData;
 import top.haibaraai.secondsKill.domain.User;
 import top.haibaraai.secondsKill.service.UserService;
+import top.haibaraai.secondsKill.util.JwtUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -43,8 +46,13 @@ public class LoginController extends BasicController {
      */
     @RequestMapping("/callback")
     public void loginCallBack(@RequestParam(value = "code") String code,
-                              @RequestParam(value = "state") String state) {
+                              @RequestParam(value = "state") String state,
+                              HttpServletResponse response) throws IOException {
         User user = userService.save(code);
+        if (user != null) {
+            String token = JwtUtils.geneJsonWebToken(user);
+            response.sendRedirect(state + "?token=" + token + "&head_img=" + user.getHeadImg() + "&name=" + URLEncoder.encode(user.getName(), "UTF-8"));
+        }
     }
 
 }
