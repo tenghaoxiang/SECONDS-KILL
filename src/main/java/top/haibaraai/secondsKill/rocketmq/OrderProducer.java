@@ -32,7 +32,6 @@ public class OrderProducer {
             @Override
             public void onSuccess(SendResult sendResult) {
                 logger.info("消息发送成功: " + sendResult);
-
             }
 
             @Override
