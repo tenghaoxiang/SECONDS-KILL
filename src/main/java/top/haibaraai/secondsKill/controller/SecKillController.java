@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.haibaraai.secondsKill.domain.JsonData;
+import top.haibaraai.secondsKill.domain.Order;
 import top.haibaraai.secondsKill.domain.Stock;
 import top.haibaraai.secondsKill.rocketmq.OrderProducer;
 import top.haibaraai.secondsKill.service.OrderService;
@@ -18,6 +19,7 @@ import top.haibaraai.secondsKill.util.DistributedLock;
 import top.haibaraai.secondsKill.util.JwtUtils;
 import top.haibaraai.secondsKill.util.RedisService;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,10 +53,10 @@ public class SecKillController extends BasicController {
 
     private String LOCK_PREFIX = "lock_";
 
-    private RateLimiter limiter = RateLimiter.create(2000);
+//    private RateLimiter limiter = RateLimiter.create(2000);
 
     @GetMapping("/start")
-    public JsonData start(@RequestParam(value = "token",required = false) String token,
+    public JsonData start(@RequestParam(value = "token", required = false) String token,
                           @RequestParam(value = "id") int stockId) {
 
         //解析token,获取当前用户id,若解析出错或者token为空,提醒用户进行登录
@@ -71,44 +73,47 @@ public class SecKillController extends BasicController {
         String lockKey = LOCK_PREFIX + stockId;
 
         //限流
-        if (!limiter.tryAcquire()) {
-            return success(null, "活动太火爆了，请重试");
-        }
+//        if (!limiter.tryAcquire()) {
+//            return success(null, "活动太火爆了，请重试");
+//        }
 
         //尝试获得商品锁
         while (!distributedLock.lock(lockKey, userId, 1)) {
         }
-        try {
+        try{
             //尝试从redis中获取，若没有则从mysql中获取并添加到redis
-            Integer left;
-            if ((left = (Integer) redisService.get(stockKey)) == null) {
+            if (redisService.get(stockKey) == null) {
                 stock = stockService.findById(stockId);
                 redisService.set(stockKey, stock);
             }
-            //判断库存
-            if (left <= 0) {
+            //在redis中预减库存
+            if (redisService.decr(stockKey) < 0) {
+//                stockBloomFilterService.add(stockId);
                 return success(null, "商品已售空!");
             }
-            //在redis中预减库存
-            if (redisService.decr(stockKey) == 0) {
-                stockBloomFilterService.add(stockId);
-            }
+        }finally {
+            distributedLock.unlock(lockKey, userId);
+        }
+//        if (redisService.decr(stockKey) < 0) {
+//            return success(null, "商品已售空!");
+//        }
+
+        try {
             //放入消息队列
             Map<String, Object> map = new HashMap<>();
             map.put("stockId", stockId);
             map.put("userId", userId);
             orderProducer.sendMessage(map);
-            return success(null, "下单成功!");
+            return success(null, "秒杀成功!");
         } catch (Exception e) {
             logger.error("Exception: " + e);
             return error(null, "系统发生异常，请重试!");
-        }finally {
-            distributedLock.unlock(lockKey, userId);
         }
 
     }
 
     @GetMapping("/init")
+    @PostConstruct
     public JsonData init() {
         List<Stock> stockList = stockService.findAll();
         String stockKey;

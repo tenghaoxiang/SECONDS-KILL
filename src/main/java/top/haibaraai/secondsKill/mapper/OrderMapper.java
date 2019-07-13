@@ -35,4 +35,13 @@ public interface OrderMapper {
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
     int save(Order order);
 
+    /**
+     * 通过用户id和商品id查找订单
+     * @param userId
+     * @param stockId
+     * @return
+     */
+    @Select("SELECT * FROM order WHERE id = #{stockId} AND user_id = #{userId} LIMIT 1")
+    Order findByUserAndStock(int userId, int stockId);
+
 }

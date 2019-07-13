@@ -12,4 +12,6 @@ public interface OrderService {
 
     int save(Order order);
 
+    Order findByUserAndStock(int userId, int stockId);
+
 }

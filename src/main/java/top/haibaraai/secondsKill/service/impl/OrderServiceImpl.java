@@ -28,4 +28,9 @@ public class OrderServiceImpl implements OrderService {
     public int save(Order order) {
         return orderMapper.save(order);
     }
+
+    @Override
+    public Order findByUserAndStock(int userId, int stockId) {
+        return orderMapper.findByUserAndStock(userId, stockId);
+    }
 }
