@@ -19,7 +19,7 @@ public class JwtUtils {
     /**
      * 过期时间
      */
-    private static final long EXPIRE = 1000 * 60;
+    private static final long EXPIRE = 1000 * 60 * 60 * 24;
     /**
      * 秘钥
      */
@@ -51,7 +51,7 @@ public class JwtUtils {
      */
     public static Claims checkJWT(String token) {
         try {
-            final Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
             return claims;
         } catch (Exception e) {
             return null;

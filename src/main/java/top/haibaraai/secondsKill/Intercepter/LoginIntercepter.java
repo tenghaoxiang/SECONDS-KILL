@@ -17,6 +17,7 @@ public class LoginIntercepter implements HandlerInterceptor {
 
     /**
      * 进入controller之前进行拦截
+     *
      * @param request
      * @param response
      * @param handler
@@ -31,11 +32,13 @@ public class LoginIntercepter implements HandlerInterceptor {
         }
         if (token != null && !token.equals("undefined")) {
             Claims claims = JwtUtils.checkJWT(token);
-            Integer userId = (Integer) claims.get("id");
-            String name = (String) claims.get("name");
-            request.setAttribute("user_id", userId);
-            request.setAttribute("name", name);
-            return true;
+            if (claims != null) {
+                Integer userId = (Integer) claims.get("id");
+                String name = (String) claims.get("name");
+                request.setAttribute("user_id", userId);
+                request.setAttribute("name", name);
+                return true;
+            }
         }
         sendJsonMessage(response, new JsonData(-1, null, "请登录!"));
         return false;
@@ -43,6 +46,7 @@ public class LoginIntercepter implements HandlerInterceptor {
 
     /**
      * 相应数据给前端
+     *
      * @param response
      * @param object
      * @throws IOException
