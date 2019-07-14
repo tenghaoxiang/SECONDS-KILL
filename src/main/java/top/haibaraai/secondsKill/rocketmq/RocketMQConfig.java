@@ -10,7 +10,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RocketMQConfig {
 
+    /**
+     * 测试地址
+     */
     public static final String NAME_SERVER_ADDR = "192.168.56.101:9876";
+
+    /**
+     * 生产环境
+     */
+//    public static final String NAME_SERVER_ADDR = "172.17.177.143:9876";
 
     public static final String TOPIC = "SECKILL_TOPIC";
 

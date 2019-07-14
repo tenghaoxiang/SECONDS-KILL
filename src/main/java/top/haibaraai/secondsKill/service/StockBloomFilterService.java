@@ -2,8 +2,8 @@ package top.haibaraai.secondsKill.service;
 
 public interface StockBloomFilterService {
 
-    void add(int id);
+    void add(String id);
 
-    boolean isExist(int id);
+    boolean isExist(String id);
 
 }

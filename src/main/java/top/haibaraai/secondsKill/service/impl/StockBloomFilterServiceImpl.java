@@ -8,6 +8,7 @@ import top.haibaraai.secondsKill.service.StockBloomFilterService;
 import top.haibaraai.secondsKill.service.StockService;
 
 import javax.annotation.PostConstruct;
+import java.nio.charset.Charset;
 
 @Service
 public class StockBloomFilterServiceImpl implements StockBloomFilterService {
@@ -15,20 +16,20 @@ public class StockBloomFilterServiceImpl implements StockBloomFilterService {
     @Autowired
     private StockService stockService;
 
-    private BloomFilter<Integer> bloomFilter;
+    private BloomFilter<String> bloomFilter;
 
     @PostConstruct
     public void initBloomFilter() {
-        bloomFilter = BloomFilter.create(Funnels.integerFunnel(), stockService.countAll());
+        bloomFilter = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()), stockService.countAll() * 1000);
     }
 
     @Override
-    public void add(int id) {
+    public void add(String id) {
         bloomFilter.put(id);
     }
 
     @Override
-    public boolean isExist(int id) {
+    public boolean isExist(String id) {
         return bloomFilter.mightContain(id);
     }
 }
